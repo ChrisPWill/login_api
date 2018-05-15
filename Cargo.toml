@@ -1,0 +1,6 @@
+[package]
+name = "space_game_api"
+version = "0.1.0"
+authors = ["Chris Williams <chrispwill@gmail.com>"]
+
+[dependencies]
