@@ -1,6 +1,6 @@
 use rouille::{Request, Response};
 
-pub fn auth_routes(request: &Request) -> Response {
+pub fn user_routes(request: &Request) -> Response {
     router!(
         request,
         (GET) (/) => {
