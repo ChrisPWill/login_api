@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod models;
 
 use rouille::{Request, Response};
 
