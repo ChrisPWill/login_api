@@ -29,9 +29,15 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
     let user_result =
         handlers::user::create_user(connection, &body.email, &body.password);
     match user_result {
-        Ok(user) => Response::json(&CreateUserResponse {
-            email: user.email,
-        }),
+        Ok(user) => {
+            let mut response = Response::json(&CreateUserResponse {
+                id: user.id,
+                email: user.email,
+                date_created: user.date_created,
+            });
+            response.status_code = 201;
+            response
+        },
         Err(CreateUserError::EmailExists) => {
             let mut response = Response::json(&SingleErrorResponse {
                 error: "Email already registered".to_owned(),
