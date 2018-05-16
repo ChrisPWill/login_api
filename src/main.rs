@@ -13,7 +13,7 @@ pub mod handlers;
 pub mod v1;
 
 use dal::DalConnection;
-use diesel::{Connection, pg::PgConnection};
+use diesel::{Connection, pg::PgConnection, result::Error};
 use dotenv::dotenv;
 use rouille::{Request, Response};
 use std::env;
@@ -28,7 +28,12 @@ fn main() {
             PgConnection::establish(&db_url).expect("Error connecting to DB!"),
         );
 
-        routes(&request, &connection)
+        connection
+            .pg_connection
+            .transaction::<Response, Error, _>(|| {
+                Ok(routes(&request, &connection))
+            })
+            .unwrap()
     });
 }
 

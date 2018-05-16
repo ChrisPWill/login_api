@@ -37,7 +37,7 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
             });
             response.status_code = 201;
             response
-        },
+        }
         Err(CreateUserError::EmailExists) => {
             let mut response = Response::json(&SingleErrorResponse {
                 error: "Email already registered".to_owned(),
