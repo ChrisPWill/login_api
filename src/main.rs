@@ -12,21 +12,27 @@ pub mod dal;
 pub mod handlers;
 pub mod v1;
 
+use dal::DalConnection;
+use diesel::{Connection, pg::PgConnection};
 use dotenv::dotenv;
 use rouille::{Request, Response};
 use std::env;
 
 fn main() {
     dotenv().ok();
-    env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    env::var("HMAC_HASH").expect("HMAC_HASH must be set");
+    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let _hmac_hash = env::var("HMAC_HASH").expect("HMAC_HASH must be set");
 
     rouille::start_server("localhost:8000", move |request| {
-        routes(&request)
+        let connection = DalConnection::new(
+            PgConnection::establish(&db_url).expect("Error connecting to DB!"),
+        );
+
+        routes(&request, &connection)
     });
 }
 
-fn routes(request: &Request) -> Response {
+fn routes(request: &Request, connection: &DalConnection) -> Response {
     router!(
         request,
         (GET) (/) => {
@@ -34,7 +40,7 @@ fn routes(request: &Request) -> Response {
         },
         _ => {
             if let Some(v1_request) = request.remove_prefix("/v1") {
-                v1::v1_routes(&v1_request)
+                v1::v1_routes(&v1_request, &connection)
             } else {
                 Response::empty_404()
             }
