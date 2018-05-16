@@ -9,16 +9,17 @@ extern crate serde;
 extern crate serde_derive;
 
 pub mod dal;
+pub mod handlers;
 pub mod v1;
 
 use dotenv::dotenv;
-use std::env;
 use rouille::{Request, Response};
+use std::env;
 
 fn main() {
     dotenv().ok();
-    let _database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
+    env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    env::var("HMAC_HASH").expect("HMAC_HASH must be set");
 
     rouille::start_server("localhost:8000", move |request| {
         routes(&request)

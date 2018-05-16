@@ -1,13 +1,10 @@
+use super::{DalConnection, schema::users};
 use chrono::{DateTime, Utc};
 use diesel;
 use diesel::prelude::*;
-use super::{
-    DalConnection,
-    schema::users,
-};
 
 #[derive(Insertable)]
-#[table_name="users"]
+#[table_name = "users"]
 pub struct NewUser<'a> {
     pub email: &'a str,
     pub password: &'a str,
@@ -21,7 +18,10 @@ pub struct User {
     pub date_created: DateTime<Utc>,
 }
 
-pub fn create_user<'a>(connection: &DalConnection, new_user: &'a NewUser) -> User {
+pub fn create_user<'a>(
+    connection: &DalConnection,
+    new_user: &'a NewUser,
+) -> User {
     let pg_connection = &connection.pg_connection;
     diesel::insert_into(users::table)
         .values(new_user)

@@ -1,10 +1,7 @@
 pub mod schema;
 pub mod users;
 
-use diesel::{
-    Connection,
-    pg::PgConnection,
-};
+use diesel::{Connection, pg::PgConnection};
 
 pub fn establish_connection(database_url: &str) -> PgConnection {
     PgConnection::establish(&database_url)
@@ -18,6 +15,8 @@ pub struct DalConnection {
 
 impl DalConnection {
     pub fn new(connection: PgConnection) -> DalConnection {
-        DalConnection { pg_connection: connection }
+        DalConnection {
+            pg_connection: connection,
+        }
     }
 }
