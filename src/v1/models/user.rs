@@ -1,7 +1,9 @@
 use chrono::{DateTime, Utc};
+use validator::Validate;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct CreateUserRequest {
+    #[validate(email(message = "Email is not valid"))]
     pub email: String,
     pub password: String,
 }

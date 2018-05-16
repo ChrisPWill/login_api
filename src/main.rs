@@ -7,6 +7,9 @@ extern crate rouille;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate validator;
+#[macro_use]
+extern crate validator_derive;
 
 pub mod dal;
 pub mod handlers;

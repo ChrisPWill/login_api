@@ -3,6 +3,7 @@ use handlers;
 use rouille::{Request, Response, input::json::JsonError, input::json_input};
 use v1::models::{response::SingleErrorResponse,
                  user::{CreateUserRequest, CreateUserResponse}};
+use validator::Validate;
 
 pub fn user_routes(request: &Request, connection: &DalConnection) -> Response {
     router!(
@@ -26,6 +27,17 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
         }
         _ => panic!("Body should only be extracted once."),
     };
+    // Validate other fields
+    match body.validate() {
+        Ok(_) => (),
+        Err(e) => {
+            let mut response = Response::json(&e);
+            response.status_code = 422;
+            println!("{}", e);
+            return response;
+        }
+    }
+
     let user_result =
         handlers::user::create_user(connection, &body.email, &body.password);
     match user_result {
