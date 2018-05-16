@@ -1,4 +1,4 @@
-use dal::DalConnection;
+use dal::{DalConnection, users::CreateUserError};
 use handlers;
 use rouille::{Request, Response, input::json::JsonError, input::json_input};
 use v1::models::{response::SingleErrorResponse,
@@ -26,9 +26,21 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
         }
         _ => panic!("Body should only be extracted once."),
     };
-    let user =
+    let user_result =
         handlers::user::create_user(connection, &body.email, &body.password);
-    Response::json(&CreateUserResponse {
-        email: user.email,
-    })
+    match user_result {
+        Ok(user) => Response::json(&CreateUserResponse {
+            email: user.email,
+        }),
+        Err(CreateUserError::EmailExists) => {
+            let mut response = Response::json(&SingleErrorResponse {
+                error: "Email already registered".to_owned(),
+            });
+            response.status_code = 409;
+            response
+        }
+        Err(CreateUserError::OtherDbError(err)) => {
+            panic!("Unexpected database error: {}", err);
+        }
+    }
 }
