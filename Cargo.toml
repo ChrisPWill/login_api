@@ -4,7 +4,8 @@ version = "0.1.0"
 authors = ["Chris Williams <chrispwill@gmail.com>"]
 
 [dependencies]
-diesel = { version = "1.2.2", features = ["postgres"] }
+chrono = "0.4.2"
+diesel = { version = "1.2.2", features = ["chrono", "postgres"] }
 dotenv = "0.11.0"
 rouille = "2.1.0"
 serde = "1.0"

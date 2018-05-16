@@ -158,6 +158,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "byteorder 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "chrono 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel_derives 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pq-sys 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -668,6 +669,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "space_game_api"
 version = "0.1.0"
 dependencies = [
+ "chrono 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel 1.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "dotenv 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rouille 2.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
