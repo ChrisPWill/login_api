@@ -10,6 +10,10 @@ pub fn create_user(
     email: &str,
     password: &str,
 ) -> Result<User, CreateUserError> {
+    if dal::users::get_user_by_email(connection, email).is_ok() {
+        return Err(CreateUserError::EmailExists);
+    }
+
     let hashed_password = hash_password(
         password,
         env::var("HMAC_HASH")
