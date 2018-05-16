@@ -1,4 +1,4 @@
-use rouille::{Response, Request};
+use rouille::{Request, Response};
 
 pub fn auth_routes(request: &Request) -> Response {
     router!(

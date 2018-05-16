@@ -3,7 +3,7 @@ extern crate rouille;
 
 pub mod v1;
 
-use rouille::{Response, Request};
+use rouille::{Request, Response};
 
 fn main() {
     rouille::start_server("localhost:8000", move |request| {

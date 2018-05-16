@@ -1,6 +1,6 @@
 pub mod auth;
 
-use rouille::{Response, Request};
+use rouille::{Request, Response};
 
 pub fn v1_routes(request: &Request) -> Response {
     router!(
