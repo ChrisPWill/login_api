@@ -1,5 +1,5 @@
-pub mod user;
 pub mod models;
+pub mod user;
 
 use rouille::{Request, Response};
 
