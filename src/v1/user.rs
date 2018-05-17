@@ -33,7 +33,6 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
         Err(e) => {
             let mut response = Response::json(&e);
             response.status_code = 422;
-            println!("{}", e);
             return response;
         }
     }
