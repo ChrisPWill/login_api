@@ -14,3 +14,10 @@ pub struct CreateUserResponse {
     pub email: String,
     pub date_created: DateTime<Utc>,
 }
+
+#[derive(Deserialize, Validate)]
+pub struct LoginRequest {
+    #[validate(email(message = "Email is not valid"))]
+    pub email: String,
+    pub password: String,
+}
