@@ -72,8 +72,17 @@ pub fn get_user_by_email(
     }
 }
 
-#[derive(Identifiable, Insertable, Queryable)]
+#[derive(Insertable)]
 #[table_name = "auth_tokens"]
+pub struct NewAuthToken<'a> {
+    pub user_id: i32,
+    pub token: Uuid,
+    pub date_created: DateTime<Utc>,
+    pub date_expired: DateTime<Utc>,
+    pub token_type: &'a str,
+}
+
+#[derive(Identifiable, Queryable)]
 pub struct AuthToken {
     pub id: i64,
     pub user_id: i32,
@@ -89,7 +98,7 @@ pub enum CreateAuthTokenError {
 
 pub fn create_token<'a>(
     connection: &DalConnection,
-    new_token: &'a AuthToken,
+    new_token: &'a NewAuthToken,
 ) -> Result<AuthToken, CreateAuthTokenError> {
     let pg_connection = &connection.pg_connection;
     let result = diesel::insert_into(auth_tokens::table)
@@ -101,7 +110,17 @@ pub fn create_token<'a>(
     }
 }
 
-#[derive(Identifiable, Insertable, Queryable)]
+#[derive(Insertable)]
+#[table_name = "auth_log"]
+pub struct NewAuthLog<'a> {
+    pub email: &'a str,
+    pub success: bool,
+    pub ip_address: &'a str,
+    pub user_agent: &'a str,
+    pub date_created: DateTime<Utc>,
+}
+
+#[derive(Identifiable, Queryable)]
 #[table_name = "auth_log"]
 pub struct AuthLog {
     pub id: i64,
@@ -118,7 +137,7 @@ pub enum CreateAuthLogError {
 
 pub fn create_auth_log<'a>(
     connection: &DalConnection,
-    new_log: &'a AuthLog,
+    new_log: &'a NewAuthLog,
 ) -> Result<AuthLog, CreateAuthLogError> {
     let pg_connection = &connection.pg_connection;
     let result = diesel::insert_into(auth_log::table)

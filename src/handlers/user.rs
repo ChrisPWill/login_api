@@ -1,9 +1,15 @@
 extern crate easy_password;
 
-use self::easy_password::bcrypt::hash_password;
+use self::easy_password::bcrypt::{hash_password, verify_password};
+use chrono::{Duration, prelude::*};
 use dal;
-use dal::{DalConnection, users::{CreateUserError, NewUser, User}};
+use dal::{DalConnection,
+          users::{AuthLog, AuthToken, CreateAuthLogError,
+                  CreateAuthTokenError, CreateUserError, GetUserError,
+                  NewAuthLog, NewAuthToken, NewUser, User}};
+use diesel;
 use std::env;
+use uuid::Uuid;
 
 pub fn create_user(
     connection: &DalConnection,
@@ -27,4 +33,106 @@ pub fn create_user(
         password: &hashed_password,
     };
     dal::users::create_user(connection, &new_user)
+}
+
+fn log_auth_attempt(
+    connection: &DalConnection,
+    email: &str,
+    ip_address: &str,
+    user_agent: &str,
+    success: bool,
+) -> Result<AuthLog, CreateAuthLogError> {
+    let auth_log = NewAuthLog {
+        email: email,
+        success: success,
+        ip_address: ip_address,
+        user_agent: user_agent,
+        date_created: Utc::now(),
+    };
+    dal::users::create_auth_log(connection, &auth_log)
+}
+
+pub enum LoginError {
+    UserNotFound,
+    WrongPassword,
+    OtherDbError(diesel::result::Error),
+}
+
+pub fn login(
+    connection: &DalConnection,
+    email: &str,
+    password: &str,
+    ip_address: &str,
+    user_agent: &str,
+) -> Result<AuthToken, LoginError> {
+    let user = match dal::users::get_user_by_email(connection, email) {
+        Ok(user) => user,
+        Err(error) => {
+            match log_auth_attempt(
+                connection,
+                email,
+                ip_address,
+                user_agent,
+                false,
+            ) {
+                Ok(_) => (),
+                Err(log_error) => match log_error {
+                    CreateAuthLogError::OtherDbError(db_error) => {
+                        return Err(LoginError::OtherDbError(db_error));
+                    }
+                },
+            }
+            match error {
+                GetUserError::UserNotFound => {
+                    return Err(LoginError::UserNotFound);
+                }
+                GetUserError::OtherDbError(db_error) => {
+                    return Err(LoginError::OtherDbError(db_error));
+                }
+            }
+        }
+    };
+
+    let password_valid = verify_password(
+        password,
+        &user.password,
+        env::var("HMAC_HASH")
+            .expect("HMAC_HASH must be set")
+            .as_bytes(),
+    ).expect("Parameters should be valid");
+    match log_auth_attempt(
+        connection,
+        email,
+        ip_address,
+        user_agent,
+        password_valid,
+    ) {
+        Ok(_) => (),
+        Err(log_error) => match log_error {
+            CreateAuthLogError::OtherDbError(db_error) => {
+                return Err(LoginError::OtherDbError(db_error));
+            }
+        },
+    }
+
+    let new_token = NewAuthToken {
+        user_id: user.id,
+        token: Uuid::new_v4(),
+        date_created: Utc::now(),
+        date_expired: (Utc::now() + Duration::hours(1)),
+        token_type: "authentication",
+    };
+
+    if password_valid {
+        match dal::users::create_token(connection, &new_token) {
+            Ok(token) => Ok(token),
+            Err(error) => match error {
+                CreateAuthTokenError::OtherDbError(db_error) => {
+                    Err(LoginError::OtherDbError(db_error))
+                }
+            },
+        }
+    } else {
+        Err(LoginError::WrongPassword)
+    }
 }
