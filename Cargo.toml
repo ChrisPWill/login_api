@@ -5,11 +5,12 @@ authors = ["Chris Williams <chrispwill@gmail.com>"]
 
 [dependencies]
 chrono = { version = "0.4.2", features = ["serde"] }
-diesel = { version = "1.2.2", features = ["chrono", "postgres"] }
+diesel = { version = "1.2.2", features = ["chrono", "postgres", "uuid"] }
 dotenv = "0.11.0"
 easy_password = "0.1.0"
 rouille = "2.1.0"
 serde = "1.0"
 serde_derive = "1.0"
+uuid = "0.6"
 validator = "0.6.3"
 validator_derive = "0.6.5"
