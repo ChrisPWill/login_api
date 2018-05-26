@@ -91,8 +91,8 @@ fn login(request: &Request, connection: &DalConnection) -> Response {
         connection,
         &body.email,
         &body.password,
-        "0.0.0.0",
-        "Ayy",
+        &request.remote_addr().ip().to_string(),
+        request.header("User-Agent").unwrap(),
     ) {
         Ok(_user) => {
             let mut response = Response::text("Token created".to_owned());
