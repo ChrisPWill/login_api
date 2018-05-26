@@ -94,8 +94,8 @@ fn login(request: &Request, connection: &DalConnection) -> Response {
         &request.remote_addr().ip().to_string(),
         request.header("User-Agent").unwrap(),
     ) {
-        Ok(_user) => {
-            let mut response = Response::text("Token created".to_owned());
+        Ok(token) => {
+            let mut response = Response::text(token);
             response.status_code = 201;
             response
         }

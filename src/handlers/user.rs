@@ -4,12 +4,20 @@ use self::easy_password::bcrypt::{hash_password, verify_password};
 use chrono::{Duration, prelude::*};
 use dal;
 use dal::{DalConnection,
-          users::{AuthLog, AuthToken, CreateAuthLogError,
-                  CreateAuthTokenError, CreateUserError, GetUserError,
-                  NewAuthLog, NewAuthToken, NewUser, User}};
+          users::{AuthLog, CreateAuthLogError, CreateAuthTokenError,
+                  CreateUserError, GetUserError, NewAuthLog, NewAuthToken,
+                  NewUser, User}};
 use diesel;
+use jwt::{encode, Header};
 use std::env;
 use uuid::Uuid;
+
+#[derive(Serialize)]
+pub struct AuthTokenClaims {
+    pub user_id: i32,
+    pub email: String,
+    pub token: String,
+}
 
 pub fn create_user(
     connection: &DalConnection,
@@ -64,7 +72,7 @@ pub fn login(
     password: &str,
     ip_address: &str,
     user_agent: &str,
-) -> Result<AuthToken, LoginError> {
+) -> Result<String, LoginError> {
     let user = match dal::users::get_user_by_email(connection, email) {
         Ok(user) => user,
         Err(error) => {
@@ -125,7 +133,15 @@ pub fn login(
 
     if password_valid {
         match dal::users::create_token(connection, &new_token) {
-            Ok(token) => Ok(token),
+            Ok(_) => Ok(encode(
+                &Header::default(),
+                &AuthTokenClaims {
+                    user_id: new_token.user_id,
+                    email: email.to_string(),
+                    token: new_token.token.to_string(),
+                },
+                "secret".as_ref(),
+            ).unwrap()),
             Err(error) => match error {
                 CreateAuthTokenError::OtherDbError(db_error) => {
                     Err(LoginError::OtherDbError(db_error))
