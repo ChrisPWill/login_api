@@ -140,7 +140,9 @@ pub fn login(
                     email: email.to_string(),
                     token: new_token.token.to_string(),
                 },
-                "secret".as_ref(),
+                env::var("JWT_SECRET")
+                    .expect("JWT_SECRET must be set")
+                    .as_bytes()
             ).unwrap()),
             Err(error) => match error {
                 CreateAuthTokenError::OtherDbError(db_error) => {
