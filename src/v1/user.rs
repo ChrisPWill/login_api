@@ -2,7 +2,8 @@ use dal::{DalConnection, users::CreateUserError};
 use handlers;
 use rouille::{Request, Response, input::json::JsonError, input::json_input};
 use v1::models::{response::SingleErrorResponse,
-                 user::{CreateUserRequest, CreateUserResponse, LoginRequest}};
+                 user::{CreateUserRequest, CreateUserResponse, LoginRequest,
+                        LoginResponse}};
 use validator::Validate;
 
 pub fn user_routes(request: &Request, connection: &DalConnection) -> Response {
@@ -95,7 +96,7 @@ fn login(request: &Request, connection: &DalConnection) -> Response {
         request.header("User-Agent").unwrap(),
     ) {
         Ok(token) => {
-            let mut response = Response::text(token);
+            let mut response = Response::json(&LoginResponse { token: token });
             response.status_code = 201;
             response
         }
