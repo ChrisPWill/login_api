@@ -1,9 +1,12 @@
-use dal::{DalConnection, users::CreateUserError};
+use dal::{users::CreateUserError, DalConnection};
 use handlers;
-use rouille::{Request, Response, input::json::JsonError, input::json_input};
-use v1::models::{response::SingleErrorResponse,
-                 user::{CreateUserRequest, CreateUserResponse, LoginRequest,
-                        LoginResponse}};
+use rouille::{input::json::JsonError, input::json_input, Request, Response};
+use v1::models::{
+    response::SingleErrorResponse,
+    user::{
+        CreateUserRequest, CreateUserResponse, LoginRequest, LoginResponse,
+    },
+};
 use validator::Validate;
 
 pub fn user_routes(request: &Request, connection: &DalConnection) -> Response {

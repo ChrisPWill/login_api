@@ -1,7 +1,7 @@
 pub mod schema;
 pub mod users;
 
-use diesel::{Connection, pg::PgConnection};
+use diesel::{pg::PgConnection, Connection};
 
 pub fn establish_connection(database_url: &str) -> PgConnection {
     PgConnection::establish(&database_url)

@@ -1,9 +1,13 @@
-use super::{DalConnection, schema::{auth_log, auth_tokens, users}};
+use super::{
+    schema::{auth_log, auth_tokens, users},
+    DalConnection,
+};
 use chrono::{DateTime, Utc};
 use diesel;
-use diesel::{prelude::*,
-             result::{DatabaseErrorKind, Error::DatabaseError,
-                      Error::NotFound}};
+use diesel::{
+    prelude::*,
+    result::{DatabaseErrorKind, Error::DatabaseError, Error::NotFound},
+};
 use uuid::Uuid;
 
 #[derive(Insertable)]
@@ -41,8 +45,7 @@ pub fn create_user<'a>(
                 Err(CreateUserError::EmailExists)
             }
             _ => Err(CreateUserError::OtherDbError(DatabaseError(
-                error,
-                message,
+                error, message,
             ))),
         },
         Err(error) => Err(CreateUserError::OtherDbError(error)),
@@ -61,9 +64,7 @@ pub fn get_user_by_email(
     use super::schema::users::dsl::*;
 
     let pg_connection = &connection.pg_connection;
-    let result = users
-        .filter(email.eq(email_to_check))
-        .first(pg_connection);
+    let result = users.filter(email.eq(email_to_check)).first(pg_connection);
 
     match result {
         Ok(user) => Ok(user),

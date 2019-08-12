@@ -1,12 +1,15 @@
 extern crate easy_password;
 
 use self::easy_password::bcrypt::{hash_password, verify_password};
-use chrono::{Duration, prelude::*};
+use chrono::{prelude::*, Duration};
 use dal;
-use dal::{DalConnection,
-          users::{AuthLog, CreateAuthLogError, CreateAuthTokenError,
-                  CreateUserError, GetUserError, NewAuthLog, NewAuthToken,
-                  NewUser, User}};
+use dal::{
+    users::{
+        AuthLog, CreateAuthLogError, CreateAuthTokenError, CreateUserError,
+        GetUserError, NewAuthLog, NewAuthToken, NewUser, User,
+    },
+    DalConnection,
+};
 use diesel;
 use jwt::{encode, Header};
 use std::env;
@@ -34,7 +37,8 @@ pub fn create_user(
             .expect("HMAC_HASH must be set")
             .as_bytes(),
         12,
-    ).expect("Parameters should be valid");
+    )
+    .expect("Parameters should be valid");
 
     let new_user = NewUser {
         email: email,
@@ -77,11 +81,7 @@ pub fn login(
         Ok(user) => user,
         Err(error) => {
             match log_auth_attempt(
-                connection,
-                email,
-                ip_address,
-                user_agent,
-                false,
+                connection, email, ip_address, user_agent, false,
             ) {
                 Ok(_) => (),
                 Err(log_error) => match log_error {
@@ -107,7 +107,8 @@ pub fn login(
         env::var("HMAC_HASH")
             .expect("HMAC_HASH must be set")
             .as_bytes(),
-    ).expect("Parameters should be valid");
+    )
+    .expect("Parameters should be valid");
     match log_auth_attempt(
         connection,
         email,
@@ -142,8 +143,9 @@ pub fn login(
                 },
                 env::var("JWT_SECRET")
                     .expect("JWT_SECRET must be set")
-                    .as_bytes()
-            ).unwrap()),
+                    .as_bytes(),
+            )
+            .unwrap()),
             Err(error) => match error {
                 CreateAuthTokenError::OtherDbError(db_error) => {
                     Err(LoginError::OtherDbError(db_error))

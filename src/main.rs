@@ -18,7 +18,7 @@ pub mod handlers;
 pub mod v1;
 
 use dal::DalConnection;
-use diesel::{Connection, pg::PgConnection, result::Error};
+use diesel::{pg::PgConnection, result::Error, Connection};
 use dotenv::dotenv;
 use rouille::{Request, Response};
 use std::env;
