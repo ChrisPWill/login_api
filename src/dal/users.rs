@@ -19,7 +19,7 @@ pub struct NewUser<'a> {
 
 #[derive(Identifiable, Queryable)]
 pub struct User {
-    pub id: i32,
+    pub id: i64,
     pub email: String,
     pub password: String,
     pub date_created: DateTime<Utc>,
@@ -76,7 +76,7 @@ pub fn get_user_by_email(
 #[derive(Insertable)]
 #[table_name = "auth_tokens"]
 pub struct NewAuthToken<'a> {
-    pub user_id: i32,
+    pub user_id: i64,
     pub token: Uuid,
     pub date_created: DateTime<Utc>,
     pub date_expired: DateTime<Utc>,
@@ -86,7 +86,7 @@ pub struct NewAuthToken<'a> {
 #[derive(Identifiable, Queryable)]
 pub struct AuthToken {
     pub id: i64,
-    pub user_id: i32,
+    pub user_id: i64,
     pub token: Uuid,
     pub date_created: DateTime<Utc>,
     pub date_expired: DateTime<Utc>,

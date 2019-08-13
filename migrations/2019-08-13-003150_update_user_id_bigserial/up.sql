@@ -1,0 +1,5 @@
+ALTER TABLE auth_tokens
+ALTER user_id TYPE BIGINT;
+
+ALTER TABLE users
+ALTER id TYPE BIGINT;

@@ -1,0 +1,5 @@
+ALTER TABLE auth_tokens
+ALTER user_id TYPE INTEGER;
+
+ALTER TABLE users
+ALTER id TYPE INTEGER;

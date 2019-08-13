@@ -17,7 +17,7 @@ use uuid::Uuid;
 
 #[derive(Serialize)]
 pub struct AuthTokenClaims {
-    pub user_id: i32,
+    pub user_id: i64,
     pub email: String,
     pub token: String,
 }

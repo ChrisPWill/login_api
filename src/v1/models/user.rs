@@ -10,7 +10,7 @@ pub struct CreateUserRequest {
 
 #[derive(Serialize)]
 pub struct CreateUserResponse {
-    pub id: i32,
+    pub id: i64,
     pub email: String,
     pub date_created: DateTime<Utc>,
 }

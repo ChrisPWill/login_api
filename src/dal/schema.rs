@@ -12,7 +12,7 @@ table! {
 table! {
     auth_tokens (id) {
         id -> Int8,
-        user_id -> Int4,
+        user_id -> Int8,
         token -> Uuid,
         date_created -> Timestamptz,
         date_expired -> Timestamptz,
@@ -22,7 +22,7 @@ table! {
 
 table! {
     users (id) {
-        id -> Int4,
+        id -> Int8,
         email -> Varchar,
         password -> Varchar,
         date_created -> Timestamptz,
