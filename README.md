@@ -76,13 +76,17 @@ cargo run
 
 Formatting Code
 ---------------
+
+Note: Currently the nightly version of rustfmt is used for formatting purposes only. The project
+itself is written and tested on the most current version of stable Rust.
+
 To install rustfmt:
 ```
-rustup component add rustfmt-preview
+rustup component add rustfmt --toolchain nightly
 ```
 To format the code:
 ```
-cargo fmt
+cargo +nightly fmt
 ```
 
 License
