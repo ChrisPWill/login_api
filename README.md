@@ -54,8 +54,8 @@ Example response:
 
 Planned features
 ================
-- Some sort of easy method of validating that the token has been provided in the header.
-- Token expiry dates
+- Token validation
+- MFA support (start with TOTP)
 
 Development Setup
 =================
