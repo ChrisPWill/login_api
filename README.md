@@ -1,4 +1,50 @@
-A simple login API server written in Rust using the Rouille web framework, Diesel API and PostgreSQL database.
+A simple login API server written in Rust using the Rouille web framework, Diesel API and
+PostgreSQL database.
+
+While this is currently not used in a production environment, it should provide a good starting
+point onto which a project could be built. Alternatively, appropriately configured, it can act as
+an independent login microservice which may be a beneficial architecture to adopt in certain
+circumstances.
+
+Example requests
+================
+Create user
+-----------
+http://localhost:8000/v1/user `POST`
+
+Headers:
+    Content-Type: application/json
+
+Body:
+    {
+        "email": "hunter@test.com",
+        "password": "hunter2"
+    }
+
+Example response:
+    {
+        "id": 2,
+        "email": "hunter@test.com",
+        "date_created": "2019-08-12T23:55:13.965004Z"
+    }
+
+Login
+-----
+http://localhost:8000/v1/user/login `POST`
+
+Headers:
+    Content-Type: application/json
+
+Body:
+    {
+        "email": "hunter@test.com",
+        "password": "hunter2"
+    }
+
+Example response:
+    {
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6ImNocmlzcHdpbGwrMUBnbWFpbC5jb20iLCJ0b2tlbiI6IjFhMTk3M2ZmLTdlNDQtNDFlZi04OTE0LTgyMzNmNGRhNjY4NiJ9.T9rLk2xOju93pAQxbaXnKu_RVfEdaR-9n9SUQ2T7IB4"
+    }
 
 Planned features
 ================
