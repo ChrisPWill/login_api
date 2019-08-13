@@ -1,14 +1,15 @@
+extern crate base64;
 extern crate chrono;
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
 extern crate jsonwebtoken as jwt;
+extern crate rand;
 #[macro_use]
 extern crate rouille;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-extern crate uuid;
 extern crate validator;
 #[macro_use]
 extern crate validator_derive;

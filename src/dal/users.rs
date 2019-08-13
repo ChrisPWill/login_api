@@ -8,7 +8,6 @@ use diesel::{
     prelude::*,
     result::{DatabaseErrorKind, Error::DatabaseError, Error::NotFound},
 };
-use uuid::Uuid;
 
 #[derive(Insertable)]
 #[table_name = "users"]
@@ -77,7 +76,7 @@ pub fn get_user_by_email(
 #[table_name = "auth_tokens"]
 pub struct NewAuthToken<'a> {
     pub user_id: i64,
-    pub token: Uuid,
+    pub token: Vec<u8>,
     pub date_created: DateTime<Utc>,
     pub date_expired: DateTime<Utc>,
     pub token_type: &'a str,
@@ -87,7 +86,7 @@ pub struct NewAuthToken<'a> {
 pub struct AuthToken {
     pub id: i64,
     pub user_id: i64,
-    pub token: Uuid,
+    pub token: Vec<u8>,
     pub date_created: DateTime<Utc>,
     pub date_expired: DateTime<Utc>,
     pub token_type: String,

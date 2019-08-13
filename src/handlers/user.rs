@@ -1,6 +1,7 @@
 extern crate easy_password;
 
 use self::easy_password::bcrypt::{hash_password, verify_password};
+use base64;
 use chrono::{prelude::*, Duration};
 use dal;
 use dal::{
@@ -13,7 +14,7 @@ use dal::{
 use diesel;
 use jwt::{encode, Header};
 use std::env;
-use uuid::Uuid;
+use rand::Rng;
 
 #[derive(Serialize)]
 pub struct AuthTokenClaims {
@@ -126,7 +127,7 @@ pub fn login(
 
     let new_token = NewAuthToken {
         user_id: user.id,
-        token: Uuid::new_v4(),
+        token: rand::thread_rng().gen::<[u8; 16]>().to_vec(),
         date_created: Utc::now(),
         date_expired: (Utc::now() + Duration::hours(1)),
         token_type: "authentication",
@@ -139,7 +140,7 @@ pub fn login(
                 &AuthTokenClaims {
                     user_id: new_token.user_id,
                     email: email.to_string(),
-                    token: new_token.token.to_string(),
+                    token: base64::encode(&new_token.token),
                 },
                 env::var("JWT_SECRET")
                     .expect("JWT_SECRET must be set")

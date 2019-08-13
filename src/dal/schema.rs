@@ -13,7 +13,7 @@ table! {
     auth_tokens (id) {
         id -> Int8,
         user_id -> Int8,
-        token -> Uuid,
+        token -> Bytea,
         date_created -> Timestamptz,
         date_expired -> Timestamptz,
         token_type -> Varchar,
