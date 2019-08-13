@@ -13,15 +13,18 @@ Create user
 http://localhost:8000/v1/user `POST`
 
 Headers:
+
     Content-Type: application/json
 
 Body:
+
     {
         "email": "hunter@test.com",
         "password": "hunter2"
     }
 
 Example response:
+
     {
         "id": 2,
         "email": "hunter@test.com",
@@ -33,15 +36,18 @@ Login
 http://localhost:8000/v1/user/login `POST`
 
 Headers:
+
     Content-Type: application/json
 
 Body:
+
     {
         "email": "hunter@test.com",
         "password": "hunter2"
     }
 
 Example response:
+
     {
         "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6ImNocmlzcHdpbGwrMUBnbWFpbC5jb20iLCJ0b2tlbiI6IjFhMTk3M2ZmLTdlNDQtNDFlZi04OTE0LTgyMzNmNGRhNjY4NiJ9.T9rLk2xOju93pAQxbaXnKu_RVfEdaR-9n9SUQ2T7IB4"
     }
