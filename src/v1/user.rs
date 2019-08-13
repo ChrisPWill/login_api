@@ -5,6 +5,7 @@ use v1::models::{
     response::SingleErrorResponse,
     user::{
         CreateUserRequest, CreateUserResponse, LoginRequest, LoginResponse,
+        ValidateTokenRequest,
     },
 };
 use validator::Validate;
@@ -14,6 +15,7 @@ pub fn user_routes(request: &Request, connection: &DalConnection) -> Response {
         request,
         (POST) [""] => create_user(&request, &connection),
         (POST) ["/login"] => login(&request, &connection),
+        (POST) ["/validate"] => validate_token(&request, &connection),
         _ => Response::empty_404(),
     )
 }
@@ -112,6 +114,33 @@ fn login(request: &Request, connection: &DalConnection) -> Response {
             });
             response.status_code = 401;
             return response;
+        }
+    }
+}
+
+fn validate_token(request: &Request, connection: &DalConnection) -> Response {
+    let body: ValidateTokenRequest = match json_input(request) {
+        Ok(body) => body,
+        Err(JsonError::WrongContentType)
+        | Err(JsonError::IoError(_))
+        | Err(JsonError::ParseError(_)) => {
+            let mut response = Response::json(&SingleErrorResponse {
+                error: "Body format error".to_owned(),
+            });
+            response.status_code = 400;
+            return response;
+        }
+        _ => panic!("Body should only be extracted once."),
+    };
+
+    match handlers::user::verify_token(connection, &body.token) {
+        Ok(_) => Response::empty_204(),
+        Err(_) => {
+            let mut response = Response::json(&SingleErrorResponse {
+                error: "Error".to_owned(),
+            });
+            response.status_code = 401;
+            response
         }
     }
 }

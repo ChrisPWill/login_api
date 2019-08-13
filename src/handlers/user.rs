@@ -6,8 +6,8 @@ use chrono::{prelude::*, Duration};
 use dal;
 use dal::{
     auth::{
-        AuthLog, CreateAuthLogError, CreateAuthTokenError, NewAuthLog,
-        NewAuthToken,
+        AuthLog, CreateAuthLogError, CreateAuthTokenError, GetAuthTokenError,
+        NewAuthLog, NewAuthToken,
     },
     users::{CreateUserError, GetUserError, NewUser, User},
     DalConnection,
@@ -17,12 +17,13 @@ use jwt;
 use rand::Rng;
 use std::env;
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct AuthTokenClaims {
     pub token_id: i64,
     pub user_id: i64,
     pub email: String,
     pub token: String,
+    pub exp: usize,
 }
 
 pub fn create_user(
@@ -127,11 +128,13 @@ pub fn login(
         },
     }
 
+    let date_created = Utc::now();
+    let date_expired = Utc::now() + Duration::hours(1);
     let new_token = NewAuthToken {
         user_id: user.id,
         token: rand::thread_rng().gen::<[u8; 16]>().to_vec(),
-        date_created: Utc::now(),
-        date_expired: (Utc::now() + Duration::hours(1)),
+        date_created: date_created,
+        date_expired: date_expired,
         token_type: "authentication",
     };
 
@@ -144,6 +147,7 @@ pub fn login(
                     user_id: token.user_id,
                     email: email.to_string(),
                     token: base64::encode(&new_token.token),
+                    exp: date_expired.timestamp() as usize,
                 },
                 env::var("JWT_SECRET")
                     .expect("JWT_SECRET must be set")
@@ -158,5 +162,59 @@ pub fn login(
         }
     } else {
         Err(LoginError::WrongPassword)
+    }
+}
+
+pub fn decode_jwt_token(
+    token_string: &str,
+) -> Result<jwt::TokenData<AuthTokenClaims>, jwt::errors::Error> {
+    jwt::decode::<AuthTokenClaims>(
+        token_string,
+        env::var("JWT_SECRET")
+            .expect("JWT_SECRET must be set")
+            .as_bytes(),
+        &jwt::Validation {
+            leeway: 60,
+            ..Default::default()
+        },
+    )
+}
+
+#[derive(Debug)]
+pub enum VerifyTokenError {
+    TokenMismatch,
+    UserMismatch,
+    JwtError(jwt::errors::Error),
+    GetAuthTokenError(GetAuthTokenError),
+}
+
+pub fn verify_token(
+    connection: &DalConnection,
+    token_string: &str,
+) -> Result<(), VerifyTokenError> {
+    let jwt_token = match decode_jwt_token(token_string) {
+        Ok(jwt_token) => jwt_token,
+        Err(error) => {
+            return Err(VerifyTokenError::JwtError(error));
+        }
+    };
+
+    let auth_token_from_db = match dal::auth::get_auth_token(
+        connection,
+        jwt_token.claims.token_id,
+    ) {
+        Ok(auth_token_from_db) => auth_token_from_db,
+        Err(error) => {
+            return Err(VerifyTokenError::GetAuthTokenError(error));
+        }
+    };
+
+    let encoded_token = base64::encode(&auth_token_from_db.token);
+    let user_ids_match = jwt_token.claims.user_id == auth_token_from_db.user_id;
+    let tokens_match = jwt_token.claims.token == encoded_token;
+    match (user_ids_match, tokens_match) {
+        (true, true) => Ok(()),
+        (false, _) => Err(VerifyTokenError::UserMismatch),
+        (_, false) => Err(VerifyTokenError::TokenMismatch),
     }
 }

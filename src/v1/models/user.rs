@@ -26,3 +26,8 @@ pub struct LoginRequest {
 pub struct LoginResponse {
     pub token: String,
 }
+
+#[derive(Deserialize, Validate)]
+pub struct ValidateTokenRequest {
+    pub token: String,
+}

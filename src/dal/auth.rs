@@ -4,7 +4,7 @@ use super::{
 };
 use chrono::{DateTime, Utc};
 use diesel;
-use diesel::prelude::*;
+use diesel::{prelude::*, result::Error::NotFound};
 
 #[derive(Insertable)]
 #[table_name = "auth_tokens"]
@@ -17,6 +17,7 @@ pub struct NewAuthToken<'a> {
 }
 
 #[derive(Identifiable, Queryable)]
+#[table_name = "auth_tokens"]
 pub struct AuthToken {
     pub id: i64,
     pub user_id: i64,
@@ -41,6 +42,26 @@ pub fn create_token<'a>(
     match result {
         Ok(token) => Ok(token),
         Err(error) => Err(CreateAuthTokenError::OtherDbError(error)),
+    }
+}
+
+#[derive(Debug)]
+pub enum GetAuthTokenError {
+    AuthTokenNotFound,
+    OtherDbError(diesel::result::Error),
+}
+
+pub fn get_auth_token<'a>(
+    connection: &DalConnection,
+    token_id: i64,
+) -> Result<AuthToken, GetAuthTokenError> {
+    use super::schema::auth_tokens::dsl::*;
+
+    let pg_connection = &connection.pg_connection;
+    match auth_tokens.filter(id.eq(token_id)).first(pg_connection) {
+        Ok(user) => Ok(user),
+        Err(NotFound) => Err(GetAuthTokenError::AuthTokenNotFound),
+        Err(error) => Err(GetAuthTokenError::OtherDbError(error)),
     }
 }
 
