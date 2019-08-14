@@ -19,6 +19,7 @@ use std::env;
 
 #[derive(Serialize)]
 pub struct AuthTokenClaims {
+    pub token_id: i64,
     pub user_id: i64,
     pub email: String,
     pub token: String,
@@ -136,10 +137,11 @@ pub fn login(
 
     if password_valid {
         match dal::auth::create_token(connection, &new_token) {
-            Ok(_) => Ok(jwt::encode(
+            Ok(token) => Ok(jwt::encode(
                 &jwt::Header::default(),
                 &AuthTokenClaims {
-                    user_id: new_token.user_id,
+                    token_id: token.id,
+                    user_id: token.user_id,
                     email: email.to_string(),
                     token: base64::encode(&new_token.token),
                 },
