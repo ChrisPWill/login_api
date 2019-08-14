@@ -1,3 +1,4 @@
+pub mod auth;
 pub mod schema;
 pub mod users;
 

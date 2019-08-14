@@ -5,16 +5,17 @@ use base64;
 use chrono::{prelude::*, Duration};
 use dal;
 use dal::{
-    users::{
-        AuthLog, CreateAuthLogError, CreateAuthTokenError, CreateUserError,
-        GetUserError, NewAuthLog, NewAuthToken, NewUser, User,
+    auth::{
+        AuthLog, CreateAuthLogError, CreateAuthTokenError, NewAuthLog,
+        NewAuthToken,
     },
+    users::{CreateUserError, GetUserError, NewUser, User},
     DalConnection,
 };
 use diesel;
-use jwt::{encode, Header};
-use std::env;
+use jwt;
 use rand::Rng;
+use std::env;
 
 #[derive(Serialize)]
 pub struct AuthTokenClaims {
@@ -62,7 +63,7 @@ fn log_auth_attempt(
         user_agent: user_agent,
         date_created: Utc::now(),
     };
-    dal::users::create_auth_log(connection, &auth_log)
+    dal::auth::create_auth_log(connection, &auth_log)
 }
 
 pub enum LoginError {
@@ -134,9 +135,9 @@ pub fn login(
     };
 
     if password_valid {
-        match dal::users::create_token(connection, &new_token) {
-            Ok(_) => Ok(encode(
-                &Header::default(),
+        match dal::auth::create_token(connection, &new_token) {
+            Ok(_) => Ok(jwt::encode(
+                &jwt::Header::default(),
                 &AuthTokenClaims {
                     user_id: new_token.user_id,
                     email: email.to_string(),
