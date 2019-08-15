@@ -55,6 +55,7 @@ Example response:
 Planned features
 ================
 - Token validation
+- Change password support
 - MFA support (start with TOTP)
 
 Development Setup
