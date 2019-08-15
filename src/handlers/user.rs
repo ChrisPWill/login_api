@@ -191,7 +191,7 @@ pub enum VerifyTokenError {
 pub fn verify_token(
     connection: &DalConnection,
     token_string: &str,
-) -> Result<(), VerifyTokenError> {
+) -> Result<(i64, String), VerifyTokenError> {
     let jwt_token = match decode_jwt_token(token_string) {
         Ok(jwt_token) => jwt_token,
         Err(error) => {
@@ -213,7 +213,9 @@ pub fn verify_token(
     let user_ids_match = jwt_token.claims.user_id == auth_token_from_db.user_id;
     let tokens_match = jwt_token.claims.token == encoded_token;
     match (user_ids_match, tokens_match) {
-        (true, true) => Ok(()),
+        (true, true) => {
+            Ok((auth_token_from_db.user_id, jwt_token.claims.email))
+        }
         (false, _) => Err(VerifyTokenError::UserMismatch),
         (_, false) => Err(VerifyTokenError::TokenMismatch),
     }

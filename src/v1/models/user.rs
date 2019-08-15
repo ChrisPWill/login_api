@@ -31,3 +31,9 @@ pub struct LoginResponse {
 pub struct ValidateTokenRequest {
     pub token: String,
 }
+
+#[derive(Serialize)]
+pub struct ValidateTokenResponse {
+    pub user_id: i64,
+    pub email: String,
+}

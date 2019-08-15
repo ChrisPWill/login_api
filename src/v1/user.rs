@@ -5,7 +5,7 @@ use v1::models::{
     response::SingleErrorResponse,
     user::{
         CreateUserRequest, CreateUserResponse, LoginRequest, LoginResponse,
-        ValidateTokenRequest,
+        ValidateTokenRequest, ValidateTokenResponse,
     },
 };
 use validator::Validate;
@@ -134,7 +134,12 @@ fn validate_token(request: &Request, connection: &DalConnection) -> Response {
     };
 
     match handlers::user::verify_token(connection, &body.token) {
-        Ok(_) => Response::empty_204(),
+        Ok((user_id, email)) => {
+            let mut response =
+                Response::json(&ValidateTokenResponse { user_id, email });
+            response.status_code = 200;
+            response
+        }
         Err(_) => {
             let mut response = Response::json(&SingleErrorResponse {
                 error: "Error".to_owned(),
