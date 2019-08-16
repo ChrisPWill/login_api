@@ -144,7 +144,7 @@ fn validate_token(request: &Request, connection: &DalConnection) -> Response {
         }
         Err(VerifyTokenError::TokenMismatch) => {
             let mut response = Response::json(&SingleErrorResponse {
-                error: "Token doesn't match database.".to_owned(),
+                error: "Token signature valid, but token string doesn't match database.".to_owned(),
             });
             response.status_code = 401;
             response
