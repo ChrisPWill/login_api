@@ -1,5 +1,7 @@
 use dal::{users::CreateUserError, DalConnection};
 use handlers;
+use handlers::user::VerifyTokenError;
+use jwt;
 use rouille::{input::json::JsonError, input::json_input, Request, Response};
 use v1::models::{
     response::SingleErrorResponse,
@@ -140,11 +142,49 @@ fn validate_token(request: &Request, connection: &DalConnection) -> Response {
             response.status_code = 200;
             response
         }
-        Err(_) => {
+        Err(VerifyTokenError::TokenMismatch) => {
             let mut response = Response::json(&SingleErrorResponse {
-                error: "Error".to_owned(),
+                error: "Token doesn't match database.".to_owned(),
             });
             response.status_code = 401;
+            response
+        }
+        Err(VerifyTokenError::UserMismatch) => {
+            let mut response = Response::json(&SingleErrorResponse {
+                error: "Token user_id doesn't match database.".to_owned(),
+            });
+            response.status_code = 401;
+            response
+        }
+        Err(VerifyTokenError::JwtError(error)) => match error.into_kind() {
+            jwt::errors::ErrorKind::ExpiredSignature => {
+                let mut response = Response::json(&SingleErrorResponse {
+                    error: "Token has expired.".to_owned(),
+                });
+                response.status_code = 401;
+                response
+            }
+            jwt::errors::ErrorKind::InvalidSignature => {
+                let mut response = Response::json(&SingleErrorResponse {
+                    error: "Token data is invalid/corrupted.".to_owned(),
+                });
+                response.status_code = 401;
+                response
+            }
+            error => {
+                let mut response = Response::json(&SingleErrorResponse {
+                    error: format!("Unhandled jwt error: {:?}", error)
+                        .to_owned(),
+                });
+                response.status_code = 500;
+                response
+            }
+        },
+        Err(error) => {
+            let mut response = Response::json(&SingleErrorResponse {
+                error: format!("Unhandled error: {:?}", error).to_owned(),
+            });
+            response.status_code = 500;
             response
         }
     }
