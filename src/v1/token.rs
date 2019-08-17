@@ -1,11 +1,9 @@
-use dal::{DalConnection};
+use dal::DalConnection;
 use handlers;
 use rouille::{input::json::JsonError, input::json_input, Request, Response};
 use v1::models::{
     response::SingleErrorResponse,
-    token::{
-        CreateTokenRequest, CreateTokenResponse,
-    },
+    token::{CreateTokenRequest, CreateTokenResponse},
 };
 use validator::Validate;
 
@@ -49,7 +47,8 @@ fn create_token(request: &Request, connection: &DalConnection) -> Response {
         request.header("User-Agent").unwrap(),
     ) {
         Ok(token) => {
-            let mut response = Response::json(&CreateTokenResponse { token: token });
+            let mut response =
+                Response::json(&CreateTokenResponse { token: token });
             response.status_code = 201;
             response
         }

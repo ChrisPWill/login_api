@@ -6,8 +6,8 @@ use rouille::{input::json::JsonError, input::json_input, Request, Response};
 use v1::models::{
     response::SingleErrorResponse,
     user::{
-        CreateUserRequest, CreateUserResponse,
-        ValidateTokenRequest, ValidateTokenResponse,
+        CreateUserRequest, CreateUserResponse, ValidateTokenRequest,
+        ValidateTokenResponse,
     },
 };
 use validator::Validate;
