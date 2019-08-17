@@ -27,8 +27,8 @@ use std::env;
 fn main() {
     dotenv().ok();
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let _hmac_hash = env::var("HMAC_HASH").expect("HMAC_HASH must be set");
-    let _jwt_secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+    env::var("HMAC_HASH").expect("HMAC_HASH must be set");
+    env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
     rouille::start_server("localhost:8000", move |request| {
         let connection = DalConnection::new(
