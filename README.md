@@ -31,9 +31,9 @@ Example response:
         "date_created": "2019-08-12T23:55:13.965004Z"
     }
 
-Login
+Login/token creation
 -----
-http://localhost:8000/v1/user/login `POST`
+http://localhost:8000/v1/token `POST`
 
 Headers:
 
@@ -51,12 +51,6 @@ Example response:
     {
         "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJlbWFpbCI6ImNocmlzcHdpbGwrMUBnbWFpbC5jb20iLCJ0b2tlbiI6IjFhMTk3M2ZmLTdlNDQtNDFlZi04OTE0LTgyMzNmNGRhNjY4NiJ9.T9rLk2xOju93pAQxbaXnKu_RVfEdaR-9n9SUQ2T7IB4"
     }
-
-Planned features
-================
-- Token validation
-- Change password support
-- MFA support (start with TOTP)
 
 Development Setup
 =================
