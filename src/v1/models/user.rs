@@ -16,18 +16,6 @@ pub struct CreateUserResponse {
 }
 
 #[derive(Deserialize, Validate)]
-pub struct LoginRequest {
-    #[validate(email(message = "Email is not valid"))]
-    pub email: String,
-    pub password: String,
-}
-
-#[derive(Serialize)]
-pub struct LoginResponse {
-    pub token: String,
-}
-
-#[derive(Deserialize, Validate)]
 pub struct ValidateTokenRequest {
     pub token: String,
 }

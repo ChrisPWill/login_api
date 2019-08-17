@@ -1,4 +1,5 @@
 pub mod models;
+pub mod token;
 pub mod user;
 
 use dal::DalConnection;
@@ -13,6 +14,8 @@ pub fn v1_routes(request: &Request, connection: &DalConnection) -> Response {
         _ => {
             if let Some(user_request) = request.remove_prefix("/user") {
                 user::user_routes(&user_request, &connection)
+            } else if let Some(token_request) = request.remove_prefix("/token") {
+                token::token_routes(&token_request, &connection)
             } else {
                 Response::empty_404()
             }

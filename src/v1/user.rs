@@ -6,7 +6,7 @@ use rouille::{input::json::JsonError, input::json_input, Request, Response};
 use v1::models::{
     response::SingleErrorResponse,
     user::{
-        CreateUserRequest, CreateUserResponse, LoginRequest, LoginResponse,
+        CreateUserRequest, CreateUserResponse,
         ValidateTokenRequest, ValidateTokenResponse,
     },
 };
@@ -16,7 +16,6 @@ pub fn user_routes(request: &Request, connection: &DalConnection) -> Response {
     router!(
         request,
         (POST) [""] => create_user(&request, &connection),
-        (POST) ["/login"] => login(&request, &connection),
         (POST) ["/validate"] => validate_token(&request, &connection),
         _ => Response::empty_404(),
     )
@@ -67,55 +66,6 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
         }
         Err(CreateUserError::OtherDbError(err)) => {
             panic!("Unexpected database error: {}", err);
-        }
-    }
-}
-
-fn login(request: &Request, connection: &DalConnection) -> Response {
-    let body: LoginRequest = match json_input(request) {
-        Ok(body) => body,
-        Err(JsonError::WrongContentType)
-        | Err(JsonError::IoError(_))
-        | Err(JsonError::ParseError(_)) => {
-            let mut response = Response::json(&SingleErrorResponse {
-                error: "Body format error".to_owned(),
-            });
-            response.status_code = 400;
-            return response;
-        }
-        _ => panic!("Body should only be extracted once."),
-    };
-    // Validate fields
-    match body.validate() {
-        Ok(_) => (),
-        Err(e) => {
-            let mut response = Response::json(&e);
-            response.status_code = 422;
-            return response;
-        }
-    }
-
-    match handlers::user::login(
-        connection,
-        &body.email,
-        &body.password,
-        &request.remote_addr().ip().to_string(),
-        request.header("User-Agent").unwrap(),
-    ) {
-        Ok(token) => {
-            let mut response = Response::json(&LoginResponse { token: token });
-            response.status_code = 201;
-            response
-        }
-        Err(handlers::user::LoginError::OtherDbError(err)) => {
-            panic!("Unexpected database error: {}", err);
-        }
-        Err(_) => {
-            let mut response = Response::json(&SingleErrorResponse {
-                error: "Unauthorized".to_owned(),
-            });
-            response.status_code = 401;
-            return response;
         }
     }
 }

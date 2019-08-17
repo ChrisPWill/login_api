@@ -68,19 +68,19 @@ fn log_auth_attempt(
     dal::auth::create_auth_log(connection, &auth_log)
 }
 
-pub enum LoginError {
+pub enum CreateTokenError {
     UserNotFound,
     WrongPassword,
     OtherDbError(diesel::result::Error),
 }
 
-pub fn login(
+pub fn create_token(
     connection: &DalConnection,
     email: &str,
     password: &str,
     ip_address: &str,
     user_agent: &str,
-) -> Result<String, LoginError> {
+) -> Result<String, CreateTokenError> {
     let user = match dal::users::get_user_by_email(connection, email) {
         Ok(user) => user,
         Err(error) => {
@@ -90,16 +90,16 @@ pub fn login(
                 Ok(_) => (),
                 Err(log_error) => match log_error {
                     CreateAuthLogError::OtherDbError(db_error) => {
-                        return Err(LoginError::OtherDbError(db_error));
+                        return Err(CreateTokenError::OtherDbError(db_error));
                     }
                 },
             }
             match error {
                 GetUserError::UserNotFound => {
-                    return Err(LoginError::UserNotFound);
+                    return Err(CreateTokenError::UserNotFound);
                 }
                 GetUserError::OtherDbError(db_error) => {
-                    return Err(LoginError::OtherDbError(db_error));
+                    return Err(CreateTokenError::OtherDbError(db_error));
                 }
             }
         }
@@ -123,7 +123,7 @@ pub fn login(
         Ok(_) => (),
         Err(log_error) => match log_error {
             CreateAuthLogError::OtherDbError(db_error) => {
-                return Err(LoginError::OtherDbError(db_error));
+                return Err(CreateTokenError::OtherDbError(db_error));
             }
         },
     }
@@ -156,12 +156,12 @@ pub fn login(
             .unwrap()),
             Err(error) => match error {
                 CreateAuthTokenError::OtherDbError(db_error) => {
-                    Err(LoginError::OtherDbError(db_error))
+                    Err(CreateTokenError::OtherDbError(db_error))
                 }
             },
         }
     } else {
-        Err(LoginError::WrongPassword)
+        Err(CreateTokenError::WrongPassword)
     }
 }
 
