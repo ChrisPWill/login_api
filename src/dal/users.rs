@@ -28,7 +28,7 @@ pub enum CreateUserError {
 
 pub fn create_user<'a>(
     connection: &DalConnection,
-    new_user: &'a NewUser,
+    new_user: &NewUser<'a>,
 ) -> Result<User, CreateUserError> {
     let pg_connection = &connection.pg_connection;
     let result = diesel::insert_into(users::table)

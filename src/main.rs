@@ -1,3 +1,5 @@
+#![warn(rust_2018_idioms)]
+
 extern crate base64;
 extern crate chrono;
 #[macro_use]
@@ -7,7 +9,6 @@ extern crate jsonwebtoken as jwt;
 extern crate rand;
 #[macro_use]
 extern crate rouille;
-extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate validator;

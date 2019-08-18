@@ -33,7 +33,7 @@ pub enum CreateAuthTokenError {
 
 pub fn create_token<'a>(
     connection: &DalConnection,
-    new_token: &'a NewAuthToken,
+    new_token: &NewAuthToken<'a>,
 ) -> Result<AuthToken, CreateAuthTokenError> {
     let pg_connection = &connection.pg_connection;
     let result = diesel::insert_into(auth_tokens::table)
@@ -92,7 +92,7 @@ pub enum CreateAuthLogError {
 
 pub fn create_auth_log<'a>(
     connection: &DalConnection,
-    new_log: &'a NewAuthLog,
+    new_log: &NewAuthLog<'a>,
 ) -> Result<AuthLog, CreateAuthLogError> {
     let pg_connection = &connection.pg_connection;
     let result = diesel::insert_into(auth_log::table)
