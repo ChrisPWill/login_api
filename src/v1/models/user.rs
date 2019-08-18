@@ -14,14 +14,3 @@ pub struct CreateUserResponse {
     pub email: String,
     pub date_created: DateTime<Utc>,
 }
-
-#[derive(Deserialize, Validate)]
-pub struct ValidateTokenRequest {
-    pub token: String,
-}
-
-#[derive(Serialize)]
-pub struct ValidateTokenResponse {
-    pub user_id: i64,
-    pub email: String,
-}
