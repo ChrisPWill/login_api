@@ -51,7 +51,7 @@ pub enum GetAuthTokenError {
     OtherDbError(diesel::result::Error),
 }
 
-pub fn get_auth_token<'a>(
+pub fn get_auth_token(
     connection: &DalConnection,
     token_id: i64,
 ) -> Result<AuthToken, GetAuthTokenError> {

@@ -53,8 +53,7 @@ fn create_token(request: &Request, connection: &DalConnection) -> Response {
         request.header("User-Agent").unwrap(),
     ) {
         Ok(token) => {
-            let mut response =
-                Response::json(&CreateTokenResponse { token: token });
+            let mut response = Response::json(&CreateTokenResponse { token });
             response.status_code = 201;
             response
         }
@@ -66,7 +65,7 @@ fn create_token(request: &Request, connection: &DalConnection) -> Response {
                 error: "Unauthorized".to_owned(),
             });
             response.status_code = 401;
-            return response;
+            response
         }
     }
 }

@@ -69,6 +69,21 @@ diesel migration run
 cargo run
 ```
 
+Linting Code
+------------
+
+Install clippy:
+```
+rustup component add clippy
+```
+
+To lint the code:
+```
+cargo clippy
+```
+
+Apply all suggested refactorings (don't forget to reformat code)
+
 Formatting Code
 ---------------
 

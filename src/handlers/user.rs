@@ -45,7 +45,7 @@ pub fn create_user(
     .expect("Parameters should be valid");
 
     let new_user = NewUser {
-        email: email,
+        email,
         password: &hashed_password,
     };
     dal::users::create_user(connection, &new_user)
@@ -59,10 +59,10 @@ fn log_auth_attempt(
     success: bool,
 ) -> Result<AuthLog, CreateAuthLogError> {
     let auth_log = NewAuthLog {
-        email: email,
-        success: success,
-        ip_address: ip_address,
-        user_agent: user_agent,
+        email,
+        success,
+        ip_address,
+        user_agent,
         date_created: Utc::now(),
     };
     dal::auth::create_auth_log(connection, &auth_log)
@@ -133,8 +133,8 @@ pub fn create_token(
     let new_token = NewAuthToken {
         user_id: user.id,
         token: rand::thread_rng().gen::<[u8; 16]>().to_vec(),
-        date_created: date_created,
-        date_expired: date_expired,
+        date_created,
+        date_expired,
         token_type: "authentication",
     };
 
