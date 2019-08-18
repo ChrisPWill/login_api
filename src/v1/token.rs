@@ -12,11 +12,11 @@ use v1::models::{
 };
 use validator::Validate;
 
-pub fn token_routes(request: &Request, connection: &DalConnection) -> Response {
+pub fn routes(request: &Request, connection: &DalConnection) -> Response {
     router!(
         request,
-        (POST) [""] => create_token(&request, &connection),
-        (POST) ["/validate"] => validate_token(&request, &connection),
+        (POST) [""] => create_token(request, connection),
+        (POST) ["/validate"] => validate_token(request, connection),
         _ => Response::empty_404(),
     )
 }
@@ -123,8 +123,7 @@ fn validate_token(request: &Request, connection: &DalConnection) -> Response {
             }
             error => {
                 let mut response = Response::json(&SingleErrorResponse {
-                    error: format!("Unhandled jwt error: {:?}", error)
-                        .to_owned(),
+                    error: format!("Unhandled jwt error: {:?}", error),
                 });
                 response.status_code = 500;
                 response
@@ -132,7 +131,7 @@ fn validate_token(request: &Request, connection: &DalConnection) -> Response {
         },
         Err(error) => {
             let mut response = Response::json(&SingleErrorResponse {
-                error: format!("Unhandled error: {:?}", error).to_owned(),
+                error: format!("Unhandled error: {:?}", error),
             });
             response.status_code = 500;
             response

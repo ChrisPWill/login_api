@@ -140,6 +140,10 @@ pub fn create_token(
 
     if password_valid {
         match dal::auth::create_token(connection, &new_token) {
+            // Ignoring clippy rule here only as it was necessary to fit the jwt
+            // API
+            #[allow(clippy::cast_sign_loss)]
+            #[allow(clippy::cast_possible_truncation)]
             Ok(token) => Ok(jwt::encode(
                 &jwt::Header::default(),
                 &AuthTokenClaims {
@@ -168,6 +172,9 @@ pub fn create_token(
 pub fn decode_jwt_token(
     token_string: &str,
 ) -> Result<jwt::TokenData<AuthTokenClaims>, jwt::errors::Error> {
+    // Ignoring clippy rule here only as it was necessary to fit the jwt API
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_possible_truncation)]
     jwt::decode::<AuthTokenClaims>(
         token_string,
         env::var("JWT_SECRET")
@@ -175,7 +182,7 @@ pub fn decode_jwt_token(
             .as_bytes(),
         &jwt::Validation {
             leeway: 60,
-            ..Default::default()
+            ..jwt::Validation::default()
         },
     )
 }

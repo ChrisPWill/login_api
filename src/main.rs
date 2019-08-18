@@ -1,4 +1,7 @@
 #![warn(rust_2018_idioms)]
+#![deny(clippy::all)]
+#![warn(clippy::pedantic, clippy::nursery)]
+#![allow(clippy::module_name_repetitions)]
 
 extern crate base64;
 extern crate chrono;
@@ -39,7 +42,7 @@ fn main() {
         connection
             .pg_connection
             .transaction::<Response, Error, _>(|| {
-                Ok(routes(&request, &connection))
+                Ok(routes(request, &connection))
             })
             .unwrap()
     });
@@ -53,7 +56,7 @@ fn routes(request: &Request, connection: &DalConnection) -> Response {
         },
         _ => {
             if let Some(v1_request) = request.remove_prefix("/v1") {
-                v1::v1_routes(&v1_request, &connection)
+                v1::routes(&v1_request, connection)
             } else {
                 Response::empty_404()
             }

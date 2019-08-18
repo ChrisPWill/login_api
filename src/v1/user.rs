@@ -7,10 +7,10 @@ use v1::models::{
 };
 use validator::Validate;
 
-pub fn user_routes(request: &Request, connection: &DalConnection) -> Response {
+pub fn routes(request: &Request, connection: &DalConnection) -> Response {
     router!(
         request,
-        (POST) [""] => create_user(&request, &connection),
+        (POST) [""] => create_user(request, connection),
         _ => Response::empty_404(),
     )
 }
