@@ -26,6 +26,7 @@ table! {
         email -> Varchar,
         password -> Varchar,
         date_created -> Timestamptz,
+        date_modified -> Timestamptz,
     }
 }
 

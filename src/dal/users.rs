@@ -19,6 +19,7 @@ pub struct User {
     pub email: String,
     pub password: String,
     pub date_created: DateTime<Utc>,
+    pub date_modified: DateTime<Utc>,
 }
 
 pub enum CreateUserError {
