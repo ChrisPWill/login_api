@@ -3,7 +3,7 @@ use handlers;
 use rouille::{input::json::JsonError, input::json_input, Request, Response};
 use v1::models::{
     response::SingleErrorResponse,
-    user::{CreateUserRequest, CreateUserResponse},
+    user::{CreateUserRequest, CreateUserResponse, PatchUserRequest},
 };
 use validator::Validate;
 
@@ -11,6 +11,7 @@ pub fn routes(request: &Request, connection: &DalConnection) -> Response {
     router!(
         request,
         (POST) [""] => create_user(request, connection),
+        (PATCH) ["/{user_id}", user_id: i64] => patch_user(request, connection, user_id),
         _ => Response::empty_404(),
     )
 }
@@ -62,4 +63,26 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
             panic!("Unexpected database error: {}", err);
         }
     }
+}
+
+fn patch_user(request: &Request, connection: &DalConnection, user_id: i64) -> Response {
+    let body: PatchUserRequest = match json_input(request) {
+        Ok(body) => body,
+        Err(JsonError::WrongContentType)
+        | Err(JsonError::IoError(_))
+        | Err(JsonError::ParseError(_)) => {
+            let mut response = Response::json(&SingleErrorResponse {
+                error: "Body format error".to_owned(),
+            });
+            response.status_code = 400;
+            return response;
+        }
+        _ => panic!("Body should only be extracted once."),
+    };
+
+    let mut response = Response::json(&SingleErrorResponse {
+        error: "Not implemented".to_owned(),
+    });
+    response.status_code = 501;
+    response
 }

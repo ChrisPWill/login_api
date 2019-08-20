@@ -14,3 +14,20 @@ pub struct CreateUserResponse {
     pub email: String,
     pub date_created: DateTime<Utc>,
 }
+
+#[derive(Deserialize)]
+pub enum PatchUserAction {
+    ChangePassword,
+}
+
+#[derive(Deserialize, Validate)]
+pub struct ChangePasswordData {
+    pub old_password: String,
+    pub new_password: String,
+}
+
+#[derive(Deserialize, Validate)]
+pub struct PatchUserRequest {
+    pub action: PatchUserAction,
+    pub change_password_data: Option<ChangePasswordData>,
+}
