@@ -65,7 +65,11 @@ fn create_user(request: &Request, connection: &DalConnection) -> Response {
     }
 }
 
-fn patch_user(request: &Request, connection: &DalConnection, user_id: i64) -> Response {
+fn patch_user(
+    request: &Request,
+    connection: &DalConnection,
+    user_id: i64,
+) -> Response {
     let body: PatchUserRequest = match json_input(request) {
         Ok(body) => body,
         Err(JsonError::WrongContentType)
@@ -79,6 +83,16 @@ fn patch_user(request: &Request, connection: &DalConnection, user_id: i64) -> Re
         }
         _ => panic!("Body should only be extracted once."),
     };
+
+    // Validate other fields
+    match body.validate() {
+        Ok(_) => (),
+        Err(e) => {
+            let mut response = Response::json(&e);
+            response.status_code = 422;
+            return response;
+        }
+    }
 
     let mut response = Response::json(&SingleErrorResponse {
         error: "Not implemented".to_owned(),
