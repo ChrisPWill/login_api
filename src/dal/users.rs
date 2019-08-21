@@ -69,3 +69,19 @@ pub fn get_user_by_email(
         Err(error) => Err(GetUserError::OtherDbError(error)),
     }
 }
+
+pub fn get_user_by_id(
+    connection: &DalConnection,
+    user_id: i64,
+) -> Result<User, GetUserError> {
+    use super::schema::users::dsl::*;
+
+    let pg_connection = &connection.pg_connection;
+    let result = users.filter(id.eq(user_id)).first(pg_connection);
+
+    match result {
+        Ok(user) => Ok(user),
+        Err(NotFound) => Err(GetUserError::UserNotFound),
+        Err(error) => Err(GetUserError::OtherDbError(error)),
+    }
+}
