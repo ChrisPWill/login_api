@@ -1,9 +1,12 @@
 use super::{schema::users, DalConnection};
 use chrono::{DateTime, Utc};
-use diesel;
 use diesel::{
+    self,
     prelude::*,
-    result::{DatabaseErrorKind, Error::DatabaseError, Error::NotFound},
+    result::{
+        DatabaseErrorKind,
+        Error::{DatabaseError, NotFound},
+    },
 };
 
 #[derive(Insertable)]

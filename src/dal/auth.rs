@@ -3,8 +3,7 @@ use super::{
     DalConnection,
 };
 use chrono::{DateTime, Utc};
-use diesel;
-use diesel::{prelude::*, result::Error::NotFound};
+use diesel::{self, prelude::*, result::Error::NotFound};
 
 #[derive(Insertable)]
 #[table_name = "auth_tokens"]

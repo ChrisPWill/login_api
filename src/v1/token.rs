@@ -1,12 +1,17 @@
 use dal::DalConnection;
-use handlers;
-use handlers::user::VerifyTokenError;
+use handlers::{self, user::VerifyTokenError};
 use jwt;
-use rouille::{input::json::JsonError, input::json_input, Request, Response};
+use rouille::{
+    input::{json::JsonError, json_input},
+    Request,
+    Response,
+};
 use v1::models::{
     response::SingleErrorResponse,
     token::{
-        CreateTokenRequest, CreateTokenResponse, ValidateTokenRequest,
+        CreateTokenRequest,
+        CreateTokenResponse,
+        ValidateTokenRequest,
         ValidateTokenResponse,
     },
 };

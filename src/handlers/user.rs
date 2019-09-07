@@ -3,11 +3,15 @@ extern crate easy_password;
 use self::easy_password::bcrypt::{hash_password, verify_password};
 use base64;
 use chrono::{prelude::*, Duration};
-use dal;
 use dal::{
+    self,
     auth::{
-        AuthLog, CreateAuthLogError, CreateAuthTokenError, GetAuthTokenError,
-        NewAuthLog, NewAuthToken,
+        AuthLog,
+        CreateAuthLogError,
+        CreateAuthTokenError,
+        GetAuthTokenError,
+        NewAuthLog,
+        NewAuthToken,
     },
     users::{CreateUserError, GetUserError, NewUser, User},
     DalConnection,

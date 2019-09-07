@@ -1,6 +1,10 @@
 use dal::{users::CreateUserError, DalConnection};
 use handlers;
-use rouille::{input::json::JsonError, input::json_input, Request, Response};
+use rouille::{
+    input::{json::JsonError, json_input},
+    Request,
+    Response,
+};
 use v1::models::{
     response::SingleErrorResponse,
     user::{CreateUserRequest, CreateUserResponse, PatchUserRequest},
